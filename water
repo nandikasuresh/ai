@@ -1,0 +1,50 @@
+from collections import deque
+
+# Function to perform BFS to solve water jug problem
+def waterJugBFS(jug1_capacity, jug2_capacity, target):
+    # Initial state of both jugs (0, 0)
+    start_state = (0, 0)
+
+    # Visited set to keep track of visited states
+    visited = set()
+
+    # Queue to store states for BFS traversal
+    queue = deque([start_state])
+
+    while queue:
+        current_state = queue.popleft()
+        # Check if current state is the target state
+        if current_state[0] == target or current_state[1] == target:
+            return current_state
+
+        visited.add(current_state)
+
+        # Possible next states after pouring operations
+        next_states = []
+        next_states.append((jug1_capacity, current_state[1]))  # Fill jug1
+        next_states.append((current_state[0], jug2_capacity))  # Fill jug2
+        next_states.append((0, current_state[1]))              # Empty jug1
+        next_states.append((current_state[0], 0))              # Empty jug2
+        next_states.append((min(jug1_capacity, current_state[0] + current_state[1]),  # Pour from jug2 to jug1
+                            max(0, current_state[0] + current_state[1] - jug1_capacity)))
+        next_states.append((max(0, current_state[0] + current_state[1] - jug2_capacity),  # Pour from jug1 to jug2
+                            min(jug2_capacity, current_state[0] + current_state[1])))
+
+        # Enqueue next states if not visited
+        for state in next_states:
+            if state not in visited:
+                queue.append(state)
+
+    # If target state is not reachable
+    return None
+
+# Example usage:
+jug1_capacity = 4
+jug2_capacity = 3
+target = 2
+
+result = waterJugBFS(jug1_capacity, jug2_capacity, target)
+if result:
+    print(f"Target {target} liters can be obtained in Jug 1: {result[0]} liters, Jug 2: {result[1]} liters")
+else:
+    print(f"Target {target} liters cannot be obtained with the given jug capacities.")
